@@ -15,6 +15,8 @@ dsh plugin --profile web add "github:vlln/whale-girl#main"
 # https://github.com/xiaoshihou514/dsh-desktop-pet/releases
 ```
 
+可爱的同时可以显示干活进度、是否需要审批等等
+
 点个星标吧~这对我真的很重要
 
 许可：MIT
