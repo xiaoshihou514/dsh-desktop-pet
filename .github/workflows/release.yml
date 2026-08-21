@@ -95,11 +95,12 @@ jobs:
       - name: 安装 cargo-xwin（Windows 交叉链接器）
         run: cargo install cargo-xwin --locked
 
-      - name: 安装 windres + mingw gcc + nsis（Windows 资源编译器/打包器）
+      - name: 安装 windres + mingw gcc + nsis + appindicator（Windows 交叉工具链）
         # tauri-winres 嵌入 .exe 图标/清单需要资源编译器；msvc 目标默认找
         # llvm-rc，这里用 GNU windres 并通过 RC 环境变量指定（windres 预处理
-        # 还需要 mingw 的 gcc）；NSIS 安装包需要 makensis
-        run: sudo apt-get update && sudo apt-get install -y binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64 nsis
+        # 还需要 mingw 的 gcc）；NSIS 安装包需要 makensis；
+        # tray-icon 特性会让 tauri CLI 检测 appindicator 库（缺了直接 panic）
+        run: sudo apt-get update && sudo apt-get install -y binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64 nsis libayatana-appindicator3-dev
 
       - name: 安装依赖
         run: npm ci
