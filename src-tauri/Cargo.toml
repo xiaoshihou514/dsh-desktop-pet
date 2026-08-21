@@ -12,7 +12,9 @@ tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-reqwest = { version = "0.12", default-features = false, features = ["json", "stream", "rustls-tls"] }
+# 本机回环 HTTP 客户端：不带 TLS（避免 ring/aws-lc-rs 等 C 编译 crate，
+# 它们无法在 Linux→Windows 交叉编译（无 MSVC C 编译器）；DSH 默认 http://127.0.0.1）
+reqwest = { version = "0.12", default-features = false, features = ["json", "stream"] }
 tokio = { version = "1", features = ["full"] }
 futures-util = "0.3"
 

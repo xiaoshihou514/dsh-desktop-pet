@@ -95,6 +95,12 @@ jobs:
       - name: 安装 cargo-xwin（Windows 交叉链接器）
         run: cargo install cargo-xwin --locked
 
+      - name: 安装 windres + mingw gcc + nsis（Windows 资源编译器/打包器）
+        # tauri-winres 嵌入 .exe 图标/清单需要资源编译器；msvc 目标默认找
+        # llvm-rc，这里用 GNU windres 并通过 RC 环境变量指定（windres 预处理
+        # 还需要 mingw 的 gcc）；NSIS 安装包需要 makensis
+        run: sudo apt-get update && sudo apt-get install -y binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64 nsis
+
       - name: 安装依赖
         run: npm ci
 
@@ -106,12 +112,15 @@ jobs:
       - name: 运行测试
         run: npm test
 
-      - name: 交叉编译 Windows 包（NSIS + MSI）
-        run: npm run build -- --target x86_64-pc-windows-msvc
+      - name: 交叉编译 Windows 安装包（NSIS）
+        # --runner cargo-xwin：tauri CLI 不会自动用 xwin 当链接器，必须显式指定；
+        # MSI 不支持在 Linux 主机上打包（tauri 跨平台限制），故只产出 NSIS
+        env:
+          RC: x86_64-w64-mingw32-windres
+        run: npm run build -- --target x86_64-pc-windows-msvc --runner cargo-xwin
 
       - name: 发布到 GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
-            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
